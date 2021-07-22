@@ -1,0 +1,24 @@
+the elf header contains all relevant informations to load an elf executable.
+
+Steps an elf executable loader must perform
+
+1. verify the file starts with the ELF magic number and subsequent table
+2. Read the ELF header this is always at the beginning of an ELF file. 
+    the header contains information on how the rest of the file is laid out
+3. Read the elf executables program headers which specify
+    where in the file the program segments are located and
+    where they need to be loaded into memory
+4. parse the program headers to determine the number of program segments that must be loaded
+    each program header has an associated type. Only headers with a type of PT_LOAD 
+    describe a loadable segment
+5. Load each of the loadable segments. This is done as follows:
+    a. allocate virtual memory for each segment, at the address specified by the p_vaddr
+        member in the program header with size being p_memsz
+    b. copy the segment data from the file offset specified by the p_offset member to the virtual
+        memory address specified by the p_vaddr member. the size of the segment in the file
+        is contained in the p_filesz member which can be zero.
+    c. The p_memsz member specifies the size the segment occupies in memory. If the p-filesz and p_memsz 
+        members differ then this indicates that the segment is padded with zeros. all bytes in memory
+        between the ending offset of the file size and the segments virtual memory size are to be cleared with zeros
+6. read the executables entry point from the ELF header
+7. Jump to the executables entry point in the newly loaded memory
