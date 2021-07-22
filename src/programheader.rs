@@ -1,13 +1,30 @@
 
 #[derive(Debug)]
 pub struct ProgramHeader32 {
+
+    //findicates what type of segment this array element describes
     pub p_type:   u32,
+    
+    //offset from beginning of the file in which the first byte of the segment resides
     pub p_offset: usize,
+    
+    //virtual address
     pub p_vaddr:  usize,
+    
+    //physical address on systems where relevans
     pub p_paddr:  usize,
+    
+    //number of bytes in the file image of the segment
     pub p_filesz: usize,
+    
+    //number of bytes in the memory image of the segment
     pub p_memsz:  usize,
+    
+    //flags relevant to the segment
+    //PF_X, PF_W, PF_R
     pub p_flags:  u32,
+    
+    //byte alignment
     pub p_align:  usize,
 }
 
@@ -33,6 +50,8 @@ pub enum ProgramHeader {
 
 
 impl ProgramHeader {
+
+    //creates new program header depending on 32 bit or 64
     pub fn new() -> Self {
         match usize::BITS {
             32  => {
@@ -63,6 +82,7 @@ impl ProgramHeader {
         }
     }
     
+    //helper method to set program header type depending on architecture
     pub fn setTYPE(&mut self, val: u32) {
         match self {
             ProgramHeader::ProgramHeader32(h) => h.p_type = val,
